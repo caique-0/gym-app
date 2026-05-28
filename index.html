@@ -341,7 +341,7 @@ onAuthStateChanged(auth, async user => {
     showSync('carregando...');
     try {
       const remote = await loadFromFirestore(user.uid);
-      if (remote) window.S = remote;
+      if (remote) window.S = fixFormat(remote);
     } catch(e) { /* usa dados locais se Firestore falhar */ }
     window._currentUid = user.uid;
     if (window.isWatch) { wRenderHome(); } else { render(); }
@@ -388,6 +388,17 @@ function fakeHist(base, unit) {
     out.push({ date: d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}), load: +(base - i*(unit==='kg'?2.5:5)).toFixed(1) });
   }
   return out;
+}
+
+// Converte formato novo (days:[]) de volta para o formato antigo ({exercises:[]})
+function fixFormat(s) {
+  if (!s) return null;
+  if (s.days && Array.isArray(s.days)) {
+    const day = s.days[0];
+    if (day) return { title: day.name, exercises: day.exercises || [], nextId: day.nextId || 1 };
+    return null;
+  }
+  return s; // já está no formato correto
 }
 
 window.S = {
