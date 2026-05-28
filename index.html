@@ -15,12 +15,12 @@
       --text:#111110; --text2:#6b6b68; --text3:#a8a8a4;
       --border:rgba(0,0,0,0.10); --border2:rgba(0,0,0,0.18);
       --success:#3b6d11; --danger:#a32d2d;
-      --r:12px; --rs:8px;
+      --radius:12px; --rs:8px;
       --safe-top:env(safe-area-inset-top,0px);
       --safe-bot:env(safe-area-inset-bottom,0px);
     }
-    @media (prefers-color-scheme: dark) {
-      :root {
+    @media (prefers-color-scheme:dark){
+      :root{
         --bg:#111110; --bg2:#1c1c1a; --bg3:#272725;
         --text:#e8e8e4; --text2:#9a9a96; --text3:#5a5a57;
         --border:rgba(255,255,255,0.10); --border2:rgba(255,255,255,0.18);
@@ -30,10 +30,10 @@
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}
 
-    /* ── Login screen ── */
+    /* ── Login ── */
     #login-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;z-index:100;padding:2rem}
     #login-screen.hidden{display:none}
-    @media (max-width:320px){#login-screen{display:none!important}}
+    @media (max-width:320px),(max-device-width:500px) and (min-aspect-ratio:9/10) and (max-aspect-ratio:10/9){#login-screen{display:none!important}}
     .login-logo{font-size:48px}
     .login-title{font-size:22px;font-weight:700;color:var(--text)}
     .login-sub{font-size:14px;color:var(--text3);text-align:center;max-width:260px;line-height:1.5}
@@ -46,19 +46,38 @@
     #sync-bar.show{display:block}
 
     /* ── User badge ── */
-    .user-badge{display:flex;align-items:center;gap:8px;cursor:pointer}
+    .user-badge{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0}
     .user-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border2)}
-    .user-name{font-size:13px;color:var(--text2);max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-    /* ── PHONE LAYOUT ── */
+    /* ── Phone layout ── */
     #phone{display:block}
     #watch{display:none}
-    #app{max-width:480px;margin:0 auto;padding:calc(var(--safe-top) + 1rem) 1rem calc(var(--safe-bot) + 5rem)}
-    .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem}
-    .header-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
-    .day-input{font-size:20px;font-weight:600;color:var(--text);border:none;background:transparent;outline:none;min-width:0;flex:1}
+
+    /* ── Screens ── */
+    .screen{display:none;max-width:480px;margin:0 auto;padding:calc(var(--safe-top) + 1rem) 1rem calc(var(--safe-bot) + 5rem)}
+    .screen.active{display:block}
+
+    /* ── Header ── */
+    .header{display:flex;align-items:center;gap:8px;margin-bottom:1.75rem}
+    .header-title{font-size:20px;font-weight:600;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .day-input{font-size:20px;font-weight:600;color:var(--text);border:none;background:transparent;outline:none;flex:1;min-width:0}
     .icon-btn{width:36px;height:36px;border:none;background:var(--bg2);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);flex-shrink:0}
     .icon-btn:active{opacity:.7;transform:scale(.95)}
+    .back-btn{width:36px;height:36px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);flex-shrink:0}
+    .back-btn:active{opacity:.7}
+
+    /* ── Week cards ── */
+    .day-card{border:.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:background .15s;position:relative}
+    .day-card:active{background:var(--bg2)}
+    .day-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .day-card-name{font-size:16px;font-weight:600;color:var(--text)}
+    .day-card-preview{font-size:13px;color:var(--text3);margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .day-card-meta{font-size:11px;color:var(--text3);margin-top:6px}
+    .day-card-chevron{color:var(--text3);flex-shrink:0}
+    .day-card-del{position:absolute;top:12px;right:44px;font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:4px;display:none}
+    .day-card:hover .day-card-del{display:block}
+
+    /* ── Exercise items ── */
     .ex-item{border-bottom:.5px solid var(--border);padding:14px 0}
     .ex-item:last-child{border-bottom:none}
     .ex-header{display:flex;align-items:center;gap:12px}
@@ -114,29 +133,30 @@
     .add-row{padding-top:1rem}
     .add-ex-btn{font-size:14px;color:var(--text3);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 0}
     .add-ex-btn:active{color:var(--text)}
-    .empty{text-align:center;padding:5rem 1rem;color:var(--text3);font-size:15px}
+    .empty{text-align:center;padding:5rem 1rem;color:var(--text3);font-size:15px;line-height:1.6}
+
+    /* ── History screen ── */
+    .section-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:1.25rem}
+    .hist-day-title{font-size:13px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin:1.25rem 0 .5rem}
+    .hist-screen-item{padding:14px 0;border-bottom:.5px solid var(--border)}
+    .hist-screen-item:last-child{border-bottom:none}
+    .hist-screen-name{font-size:15px;font-weight:500;color:var(--text);margin-bottom:6px}
+    .hist-screen-row{display:flex;gap:16px;flex-wrap:wrap}
+    .hist-screen-stat{font-size:13px;color:var(--text2)}
+    .hist-screen-stat span{font-weight:600;color:var(--text)}
+
+    /* ── Bottom nav ── */
     .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:.5px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 calc(var(--safe-bot) + 10px)}
     .nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;padding:4px 16px}
     .nav-btn.active{color:var(--text)}
     .nav-btn svg{width:22px;height:22px}
-    #history-screen{display:none}#history-screen.active{display:block}
-    #main-screen{display:block}#main-screen.hidden{display:none}
-    .hist-screen-item{padding:14px 0;border-bottom:.5px solid var(--border)}
-    .hist-screen-name{font-size:15px;font-weight:500;color:var(--text);margin-bottom:6px}
-    .hist-screen-row{display:flex;gap:16px}
-    .hist-screen-stat{font-size:13px;color:var(--text2)}
-    .hist-screen-stat span{font-weight:600;color:var(--text)}
-    .section-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:1.25rem}
 
-    /* ── WATCH LAYOUT (≤320px ou tela quadrada ≤500px) ── */
+    /* ── Watch layout ── */
     @media (max-width:320px),(max-device-width:500px) and (min-aspect-ratio:9/10) and (max-aspect-ratio:10/9){
       #phone{display:none}
       #watch{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100vw;height:100vh;overflow:hidden;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-      #login-screen{display:none!important}
     }
-    @media (max-width:320px){
-      #login-screen{display:none!important}
-    }
+    @media (max-width:320px){#login-screen{display:none!important}}
     .w-screen{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:14px;text-align:center}
     .w-screen.w-active{display:flex}
     .w-title{font-size:11px;color:#888;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
@@ -191,42 +211,59 @@
   </button>
 </div>
 
-<!-- ── Sync bar ── -->
 <div id="sync-bar">sincronizando...</div>
 
 <!-- ── PHONE ── -->
 <div id="phone">
-  <div id="app">
-    <div id="main-screen">
-      <div class="header">
-        <div class="header-left">
-          <input class="day-input" id="dayTitle" value="Peito e Tríceps" />
-        </div>
-        <div class="user-badge" onclick="signOut()" title="Sair">
-          <img class="user-avatar" id="user-avatar" src="" alt="" />
-          <span class="user-name" id="user-name"></span>
-        </div>
-        <button class="icon-btn" onclick="addExercise()" aria-label="Adicionar exercício" style="margin-left:8px">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-      </div>
-      <div id="list"></div>
-      <div class="add-row">
-        <button class="add-ex-btn" onclick="addExercise()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          adicionar exercício
-        </button>
+
+  <!-- Semana (macro) -->
+  <div id="week-screen" class="screen active">
+    <div class="header">
+      <span class="header-title">Meus Treinos</span>
+      <div class="user-badge" onclick="signOut()" title="Sair">
+        <img class="user-avatar" id="user-avatar" src="" alt="" />
       </div>
     </div>
-    <div id="history-screen">
-      <p class="section-title">Histórico de cargas</p>
-      <div id="hist-list"></div>
+    <div id="days-list"></div>
+    <div class="add-row">
+      <button class="add-ex-btn" onclick="addDay()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        adicionar treino
+      </button>
     </div>
   </div>
+
+  <!-- Detalhe do treino -->
+  <div id="day-screen" class="screen">
+    <div class="header">
+      <button class="back-btn" onclick="goBack()" aria-label="Voltar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,18 9,12 15,6"/></svg>
+      </button>
+      <input class="day-input" id="dayTitle" value="" />
+      <button class="icon-btn" onclick="addExercise()" aria-label="Adicionar exercício">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+    <div id="list"></div>
+    <div class="add-row">
+      <button class="add-ex-btn" onclick="addExercise()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        adicionar exercício
+      </button>
+    </div>
+  </div>
+
+  <!-- Histórico -->
+  <div id="history-screen" class="screen">
+    <p class="section-title">Histórico de cargas</p>
+    <div id="hist-list"></div>
+  </div>
+
+  <!-- Bottom nav -->
   <nav class="bottom-nav">
     <button class="nav-btn active" id="nav-main" onclick="showScreen('main')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
-      Treino
+      Treinos
     </button>
     <button class="nav-btn" id="nav-hist" onclick="showScreen('history')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -238,7 +275,7 @@
 <!-- ── WATCH ── -->
 <div id="watch">
   <div class="w-screen w-active" id="ws-home">
-    <div class="w-title" id="w-day-title">Peito e Tríceps</div>
+    <div class="w-title" id="w-day-title">Treino</div>
     <button class="w-big-btn" onclick="wStart()">
       <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
     </button>
@@ -278,7 +315,7 @@
   </div>
 </div>
 
-<!-- Firebase SDK -->
+<!-- Firebase -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut as fbSignOut, onAuthStateChanged }
@@ -299,7 +336,6 @@ const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
-/* ── helpers ── */
 function showSync(msg) {
   const bar = document.getElementById('sync-bar');
   bar.textContent = msg;
@@ -314,40 +350,32 @@ async function loadFromFirestore(uid) {
 
 async function saveToFirestore(uid, state) {
   const s = JSON.parse(JSON.stringify(state));
-  s.exercises.forEach(e => { e.open = false; });
+  s.days.forEach(d => d.exercises.forEach(e => { e.open = false; }));
   await setDoc(doc(db, 'users', uid), { state: s });
 }
 
-/* ── expose to global scope ── */
 window._saveToFirestore = saveToFirestore;
-window._showSync        = showSync;
+window._showSync = showSync;
 
-/* ── auth state ── */
 let _authReady = false;
-
-// Processa resultado de redirect pendente (caso o popup tenha falhado antes)
-getRedirectResult(auth).then(result => {
-  // onAuthStateChanged vai disparar com o usuário
-}).catch(() => {
-  // sem redirect pendente, normal
-});
+getRedirectResult(auth).then(() => {}).catch(() => {});
 
 onAuthStateChanged(auth, async user => {
   if (user) {
     document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('user-avatar').src  = user.photoURL || '';
-    document.getElementById('user-name').textContent = user.displayName?.split(' ')[0] || '';
+    document.getElementById('user-avatar').src = user.photoURL || '';
 
     showSync('carregando...');
     try {
       const remote = await loadFromFirestore(user.uid);
-      if (remote) window.S = remote;
-    } catch(e) { /* usa dados locais se Firestore falhar */ }
+      if (remote) window.S = migrateState(remote);
+    } catch(e) {}
     window._currentUid = user.uid;
-    if (window.isWatch) { wRenderHome(); } else { render(); }
+
+    if (window.isWatch) { wInitWatch(); }
+    else { renderWeek(); }
     showSync('sincronizado ✓');
   } else {
-    // Só mostra login depois da primeira checagem (evita flash desnecessário)
     if (_authReady && !window.isWatch) {
       document.getElementById('login-screen').classList.remove('hidden');
     }
@@ -359,28 +387,20 @@ onAuthStateChanged(auth, async user => {
 window.signIn = async function() {
   const provider = new GoogleAuthProvider();
   try {
-    // Popup: melhor para GitHub Pages (evita problema de cookies cross-domain)
     await signInWithPopup(auth, provider);
   } catch(e) {
-    // Se popup for bloqueado, cai para redirect
-    if (e.code === 'auth/popup-blocked') {
-      signInWithRedirect(auth, provider);
-    }
+    if (e.code === 'auth/popup-blocked') signInWithRedirect(auth, provider);
   }
 };
 
 window.signOut = async function() {
   if (!confirm('Sair da conta?')) return;
   await fbSignOut(auth);
-  window.S = {
-    title: 'Peito e Tríceps',
-    exercises: [], nextId: 1
-  };
 };
 </script>
 
 <script>
-/* ════════ SHARED STATE ════════ */
+/* ════════ HELPERS ════════ */
 function fakeHist(base, unit) {
   const out = [];
   for (let i = 4; i >= 1; i--) {
@@ -390,18 +410,45 @@ function fakeHist(base, unit) {
   return out;
 }
 
+function migrateState(s) {
+  if (!s) return null;
+  // Formato antigo (S.exercises no topo) → novo formato com days
+  if (s.exercises) {
+    return {
+      days: [{ id:1, name: s.title || 'Meu Treino', exercises: s.exercises, nextId: s.nextId || 1 }],
+      nextDayId: 2
+    };
+  }
+  return s;
+}
+
+/* ════════ STATE ════════ */
 window.S = {
-  title: 'Peito e Tríceps',
-  exercises: [
-    { id:1, name:'Supino reto',         sets:4, reps:12, done:[], rest:60, open:true,  load:80, unit:'kg', hist:fakeHist(80,'kg') },
-    { id:2, name:'Crucifixo inclinado', sets:3, reps:15, done:[], rest:45, open:false, load:20, unit:'kg', hist:fakeHist(20,'kg') },
-    { id:3, name:'Tríceps pulley',      sets:3, reps:12, done:[], rest:60, open:false, load:35, unit:'kg', hist:fakeHist(35,'kg') },
+  days: [
+    { id:1, name:'Peito e Tríceps', nextId:4, exercises:[
+      { id:1, name:'Supino reto',         sets:4, reps:12, done:[], rest:60, open:false, load:80, unit:'kg', hist:fakeHist(80,'kg') },
+      { id:2, name:'Crucifixo inclinado', sets:3, reps:15, done:[], rest:45, open:false, load:20, unit:'kg', hist:fakeHist(20,'kg') },
+      { id:3, name:'Tríceps pulley',      sets:3, reps:12, done:[], rest:60, open:false, load:35, unit:'kg', hist:fakeHist(35,'kg') },
+    ]},
+    { id:2, name:'Costas e Bíceps', nextId:4, exercises:[
+      { id:1, name:'Puxada frontal', sets:4, reps:12, done:[], rest:60, open:false, load:60, unit:'kg', hist:fakeHist(60,'kg') },
+      { id:2, name:'Remada curvada', sets:3, reps:12, done:[], rest:60, open:false, load:50, unit:'kg', hist:fakeHist(50,'kg') },
+      { id:3, name:'Rosca direta',   sets:3, reps:12, done:[], rest:45, open:false, load:25, unit:'kg', hist:fakeHist(25,'kg') },
+    ]},
+    { id:3, name:'Perna', nextId:4, exercises:[
+      { id:1, name:'Agachamento',       sets:4, reps:10, done:[], rest:90, open:false, load:80,  unit:'kg', hist:fakeHist(80,'kg') },
+      { id:2, name:'Leg press',         sets:3, reps:12, done:[], rest:60, open:false, load:120, unit:'kg', hist:fakeHist(120,'kg') },
+      { id:3, name:'Cadeira extensora', sets:3, reps:15, done:[], rest:45, open:false, load:40,  unit:'kg', hist:fakeHist(40,'kg') },
+    ]},
   ],
-  nextId: 4
+  nextDayId: 4
 };
 
 window._currentUid = null;
+let currentDayId = null;
 const timers = {};
+
+function getCurrentDay() { return window.S.days.find(d => d.id === currentDayId); }
 
 function saveState() {
   if (window._currentUid && window._saveToFirestore) {
@@ -410,26 +457,125 @@ function saveState() {
   }
 }
 
-function ft(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
+function ft(s) {
+  if (typeof s !== 'number' || isNaN(s)) return '0:00';
+  return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
+}
 function prevLoad(ex) { return ex.hist.length ? ex.hist[ex.hist.length-1].load : null; }
 function maxHist(ex) { const all = [...ex.hist.map(h=>h.load), ex.load]; return Math.max(...all)||1; }
 
-/* ════════ PHONE LOGIC ════════ */
-// Detecta smartwatch: param ?watch na URL, tela quadrada pequena, ou largura ≤320px
+/* ════════ DETECT DEVICE ════════ */
 window.isWatch = new URLSearchParams(location.search).has('watch')
   || window.innerWidth <= 320
   || (window.screen.width === window.screen.height && window.screen.width <= 500)
   || (Math.abs(window.screen.width - window.screen.height) <= 10 && window.screen.width <= 500);
 
+/* ════════ WEEK SCREEN ════════ */
+function renderWeek() {
+  if (window.isWatch) return;
+  const list = document.getElementById('days-list');
+  if (!window.S.days.length) {
+    list.innerHTML = '<div class="empty">Nenhum treino cadastrado.<br>Toque + para adicionar.</div>';
+    return;
+  }
+  list.innerHTML = window.S.days.map(day => {
+    const totalSets = day.exercises.reduce((a, e) => a + e.sets, 0);
+    const doneSets  = day.exercises.reduce((a, e) => a + e.done.length, 0);
+    const pct = totalSets ? Math.round(doneSets / totalSets * 100) : 0;
+    const preview = day.exercises.slice(0, 3).map(e => e.name).join(' · ') || 'Nenhum exercício';
+    const exCount = day.exercises.length;
+    return `
+    <div class="day-card" onclick="openDay(${day.id})">
+      <div class="day-card-header">
+        <span class="day-card-name">${day.name}</span>
+        <svg class="day-card-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,18 15,12 9,6"/></svg>
+      </div>
+      <div class="day-card-preview">${preview}${exCount > 3 ? ' ...' : ''}</div>
+      <div class="progress-strip" style="margin:8px 0 0 0">
+        <div class="progress-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="day-card-meta">${exCount} exercício${exCount !== 1?'s':''} · ${pct}% concluído</div>
+      <button class="day-card-del" onclick="event.stopPropagation();delDay(${day.id})" title="Remover treino">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function openDay(id) {
+  currentDayId = id;
+  const day = getCurrentDay();
+  document.getElementById('dayTitle').value = day.name;
+  document.getElementById('week-screen').classList.remove('active');
+  document.getElementById('day-screen').classList.add('active');
+  document.getElementById('history-screen').classList.remove('active');
+  document.getElementById('nav-main').classList.add('active');
+  document.getElementById('nav-hist').classList.remove('active');
+  render();
+}
+
+function goBack() {
+  currentDayId = null;
+  document.getElementById('day-screen').classList.remove('active');
+  document.getElementById('week-screen').classList.add('active');
+  document.getElementById('history-screen').classList.remove('active');
+  renderWeek();
+}
+
+function addDay() {
+  const id = window.S.nextDayId++;
+  window.S.days.push({ id, name: 'Novo treino', exercises: [], nextId: 1 });
+  saveState();
+  renderWeek();
+  setTimeout(() => openDay(id), 60);
+}
+
+function delDay(id) {
+  if (!confirm('Remover este treino?')) return;
+  // Para timers dos exercícios desse dia
+  const day = window.S.days.find(d => d.id === id);
+  if (day) day.exercises.forEach(e => {
+    if (timers[e.id]) { clearInterval(timers[e.id].interval); delete timers[e.id]; }
+  });
+  window.S.days = window.S.days.filter(d => d.id !== id);
+  saveState();
+  renderWeek();
+}
+
+function showScreen(name) {
+  if (name === 'main') {
+    if (currentDayId) {
+      document.getElementById('day-screen').classList.add('active');
+      document.getElementById('week-screen').classList.remove('active');
+    } else {
+      document.getElementById('week-screen').classList.add('active');
+      document.getElementById('day-screen').classList.remove('active');
+      renderWeek();
+    }
+    document.getElementById('history-screen').classList.remove('active');
+  } else {
+    document.getElementById('history-screen').classList.add('active');
+    document.getElementById('week-screen').classList.remove('active');
+    document.getElementById('day-screen').classList.remove('active');
+    renderHistory();
+  }
+  document.getElementById('nav-main').classList.toggle('active', name === 'main');
+  document.getElementById('nav-hist').classList.toggle('active', name === 'history');
+}
+
+/* ════════ DAY / EXERCISE RENDER ════════ */
 function render() {
   if (window.isWatch) return;
-  document.getElementById('dayTitle').value = window.S.title;
+  const day = getCurrentDay();
+  if (!day) return;
+
   const list = document.getElementById('list');
-  if (!window.S.exercises.length) {
+  if (!day.exercises.length) {
     list.innerHTML = '<div class="empty">Nenhum exercício.<br>Toque + para adicionar.</div>';
     return;
   }
-  list.innerHTML = window.S.exercises.map(ex => {
+
+  list.innerHTML = day.exercises.map(ex => {
     const pct = ex.sets ? Math.round(ex.done.length / ex.sets * 100) : 0;
     const allDone = ex.done.length === ex.sets && ex.sets > 0;
     const prev = prevLoad(ex);
@@ -441,23 +587,25 @@ function render() {
       else diffHtml = `<span class="load-diff eq">= anterior</span>`;
     }
     const maxL = maxHist(ex);
-    const histItems = [...ex.hist.map((h,i) => {
+    const histItems = [...ex.hist.map((h, i) => {
       const barH = Math.max(4, Math.round((h.load/maxL)*36));
-      const sep = '<div class="hist-connector"></div>';
       return `<div class="hist-item"><div class="hist-date">${h.date}</div>
         <div class="hist-bar-wrap"><div class="hist-bar" style="height:${barH}px"></div></div>
-        <div class="hist-val">${h.load}</div></div>${sep}`;
+        <div class="hist-val">${h.load}</div></div><div class="hist-connector"></div>`;
     }), `<div class="hist-item cur"><div class="hist-date">hoje</div>
       <div class="hist-bar-wrap"><div class="hist-bar" style="height:${Math.max(4,Math.round((ex.load/maxL)*36))}px"></div></div>
       <div class="hist-val">${ex.load}</div></div>`].join('');
+
     const setsHtml = Array.from({length:ex.sets},(_,i)=>
       `<button class="set-dot${ex.done.includes(i)?' done':''}" onclick="toggleSet(${ex.id},${i})">${i+1}</button>`
     ).join('') + `<button class="set-add" onclick="addSet(${ex.id})">+</button>`;
+
     const chips = [30,45,60,90,120].map(r=>
       `<span class="chip${ex.rest===r?' sel':''}" onclick="setRest(${ex.id},${r})">${r}s</span>`
     ).join('');
+
     const t = timers[ex.id];
-    const running = t && t.left !== null;
+    const running = t && typeof t.left === 'number'; // fix NaN: só considera running se left for número
     return `
     <div class="ex-item" id="ex-${ex.id}">
       <div class="ex-header">
@@ -503,7 +651,7 @@ function render() {
                 ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`
                 : `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>`}
             </button>
-            <span class="timer-val${running?' show':''}" id="tv-${ex.id}">${running ? ft(t.left) : ft(ex.rest)}</span>
+            <span class="timer-val${running?' show':''}" id="tv-${ex.id}">${ft(running ? t.left : ex.rest)}</span>
           </div>
         </div>
         <button class="del-btn" onclick="delEx(${ex.id})">
@@ -517,154 +665,176 @@ function render() {
 
 function renderHistory() {
   const list = document.getElementById('hist-list');
-  if (!window.S.exercises.length) { list.innerHTML = '<div class="empty">Nenhum dado ainda.</div>'; return; }
-  list.innerHTML = window.S.exercises.map(ex => {
-    const prev = prevLoad(ex);
-    const diff = prev !== null ? +(ex.load - prev).toFixed(1) : null;
-    const diffStr = diff !== null ? (diff > 0 ? `+${diff}` : `${diff}`) : '—';
-    return `<div class="hist-screen-item">
-      <div class="hist-screen-name">${ex.name}</div>
-      <div class="hist-screen-row">
-        <div class="hist-screen-stat">Hoje <span>${ex.load}${ex.unit}</span></div>
-        <div class="hist-screen-stat">Anterior <span>${prev !== null ? prev+ex.unit : '—'}</span></div>
-        <div class="hist-screen-stat">Variação <span>${diffStr !== '—' ? diffStr+ex.unit : '—'}</span></div>
-      </div>
-    </div>`;
+  if (!window.S.days.length) { list.innerHTML = '<div class="empty">Nenhum dado ainda.</div>'; return; }
+  list.innerHTML = window.S.days.map(day => {
+    if (!day.exercises.length) return '';
+    const items = day.exercises.map(ex => {
+      const prev = prevLoad(ex);
+      const diff = prev !== null ? +(ex.load - prev).toFixed(1) : null;
+      const diffStr = diff !== null ? (diff > 0 ? `+${diff}` : `${diff}`) : '—';
+      return `<div class="hist-screen-item">
+        <div class="hist-screen-name">${ex.name}</div>
+        <div class="hist-screen-row">
+          <div class="hist-screen-stat">Hoje <span>${ex.load}${ex.unit}</span></div>
+          <div class="hist-screen-stat">Anterior <span>${prev !== null ? prev+ex.unit : '—'}</span></div>
+          <div class="hist-screen-stat">Variação <span>${diffStr !== '—' ? diffStr+ex.unit : '—'}</span></div>
+        </div>
+      </div>`;
+    }).join('');
+    return `<div class="hist-day-title">${day.name}</div>${items}`;
   }).join('');
 }
 
-function showScreen(name) {
-  document.getElementById('main-screen').classList.toggle('hidden', name !== 'main');
-  document.getElementById('history-screen').classList.toggle('active', name === 'history');
-  document.getElementById('nav-main').classList.toggle('active', name === 'main');
-  document.getElementById('nav-hist').classList.toggle('active', name === 'history');
-  if (name === 'history') renderHistory();
-}
+/* ════════ EXERCISE INTERACTIONS ════════ */
+function toggleOpen(id) { const ex = getCurrentDay().exercises.find(e=>e.id===id); ex.open=!ex.open; render(); }
+function rename(id,v) { getCurrentDay().exercises.find(e=>e.id===id).name=v; saveState(); }
 
-function toggleOpen(id) { const ex = window.S.exercises.find(e=>e.id===id); ex.open=!ex.open; render(); }
-function rename(id,v) { window.S.exercises.find(e=>e.id===id).name=v; saveState(); }
 function markAll(id) {
-  const ex = window.S.exercises.find(e=>e.id===id);
+  const ex = getCurrentDay().exercises.find(e=>e.id===id);
   ex.done = (ex.done.length===ex.sets && ex.sets>0) ? [] : Array.from({length:ex.sets},(_,i)=>i);
   render(); saveState();
 }
 function toggleSet(id,i) {
-  const ex = window.S.exercises.find(e=>e.id===id);
+  const ex = getCurrentDay().exercises.find(e=>e.id===id);
   ex.done = ex.done.includes(i) ? ex.done.filter(x=>x!==i) : [...ex.done,i];
-  if (ex.done.length===ex.sets && !(timers[id]&&timers[id].left!==null)) startTimer(ex);
+  if (ex.done.length===ex.sets && !(timers[id] && typeof timers[id].left === 'number')) startTimer(ex);
   render(); saveState();
 }
-function addSet(id) { window.S.exercises.find(e=>e.id===id).sets++; render(); saveState(); }
-function chReps(id,d) { const ex=window.S.exercises.find(e=>e.id===id); ex.reps=Math.max(1,ex.reps+d); render(); saveState(); }
-function setRest(id,r) { window.S.exercises.find(e=>e.id===id).rest=r; render(); saveState(); }
-function setLoad(id,v) { window.S.exercises.find(e=>e.id===id).load=parseFloat(v)||0; saveState(); }
-function setUnit(id,u) { window.S.exercises.find(e=>e.id===id).unit=u; render(); saveState(); }
+function addSet(id) { getCurrentDay().exercises.find(e=>e.id===id).sets++; render(); saveState(); }
+function chReps(id,d) { const ex=getCurrentDay().exercises.find(e=>e.id===id); ex.reps=Math.max(1,ex.reps+d); render(); saveState(); }
+function setRest(id,r) { getCurrentDay().exercises.find(e=>e.id===id).rest=r; render(); saveState(); }
+function setLoad(id,v) { getCurrentDay().exercises.find(e=>e.id===id).load=parseFloat(v)||0; saveState(); }
+function setUnit(id,u) { getCurrentDay().exercises.find(e=>e.id===id).unit=u; render(); saveState(); }
+
 function startTimer(ex) {
-  if (!timers[ex.id]) timers[ex.id]={};
-  timers[ex.id].left=ex.rest;
+  if (!timers[ex.id]) timers[ex.id] = {};
+  timers[ex.id].left = ex.rest;
   if (timers[ex.id].interval) clearInterval(timers[ex.id].interval);
   render();
-  timers[ex.id].interval=setInterval(()=>{
+  timers[ex.id].interval = setInterval(() => {
     timers[ex.id].left--;
-    const el=document.getElementById(`tv-${ex.id}`);
-    if (el) el.textContent=ft(timers[ex.id].left);
-    if (timers[ex.id].left<=0){
-      clearInterval(timers[ex.id].interval); timers[ex.id]={};
+    const el = document.getElementById(`tv-${ex.id}`);
+    if (el) el.textContent = ft(timers[ex.id].left);
+    if (timers[ex.id].left <= 0) {
+      clearInterval(timers[ex.id].interval);
+      delete timers[ex.id];
       if ('vibrate' in navigator) navigator.vibrate([200,100,200]);
       render();
     }
-  },1000);
+  }, 1000);
 }
 function toggleTimer(id) {
-  const ex=window.S.exercises.find(e=>e.id===id);
-  const t=timers[id];
-  if (t&&t.left!==null){clearInterval(t.interval);timers[id]={};render();}
-  else startTimer(ex);
+  const ex = getCurrentDay().exercises.find(e=>e.id===id);
+  const t = timers[id];
+  if (t && typeof t.left === 'number') { // fix NaN: verifica se left é número
+    clearInterval(t.interval);
+    delete timers[id];
+    render();
+  } else {
+    startTimer(ex);
+  }
 }
 function delEx(id) {
-  if (timers[id]){clearInterval(timers[id].interval);delete timers[id];}
-  window.S.exercises=window.S.exercises.filter(e=>e.id!==id);
+  if (timers[id]) { clearInterval(timers[id].interval); delete timers[id]; }
+  const day = getCurrentDay();
+  day.exercises = day.exercises.filter(e=>e.id!==id);
   render(); saveState();
 }
 function addExercise() {
-  window.S.exercises.push({id:window.S.nextId++,name:'Novo exercício',sets:3,reps:12,done:[],rest:60,open:true,load:0,unit:'kg',hist:[]});
+  const day = getCurrentDay();
+  day.exercises.push({id:day.nextId++, name:'Novo exercício', sets:3, reps:12, done:[], rest:60, open:true, load:0, unit:'kg', hist:[]});
   render(); saveState();
-  setTimeout(()=>{ const ins=document.querySelectorAll('.ex-name'); const l=ins[ins.length-1]; if(l){l.focus();l.select();} },60);
+  setTimeout(()=>{ const ins=document.querySelectorAll('.ex-name'); const l=ins[ins.length-1]; if(l){l.focus();l.select();} }, 60);
 }
-document.getElementById('dayTitle').addEventListener('change', e => { window.S.title=e.target.value; saveState(); });
+
+document.getElementById('dayTitle').addEventListener('change', e => {
+  const day = getCurrentDay();
+  if (day) { day.name = e.target.value; saveState(); renderWeek(); }
+});
 
 /* ════════ WATCH LOGIC ════════ */
-let wCur=0, wRestInt=null, wRestLeft=60, wRestTotal=60;
-const CIRC=301.6;
+let wCur = 0, wRestInt = null, wRestLeft = 60, wRestTotal = 60;
+const CIRC = 301.6;
 
+function wGetExercises() {
+  return window.S.days.length ? window.S.days[0].exercises : [];
+}
+function wInitWatch() {
+  wRenderHome();
+}
 function wShowScreen(id) {
   document.querySelectorAll('.w-screen').forEach(s=>s.classList.remove('w-active'));
   document.getElementById(id).classList.add('w-active');
 }
 function wRenderHome() {
-  const el=document.getElementById('w-day-title');
-  const sub=document.getElementById('w-home-sub');
-  if (el) el.textContent=window.S.title;
-  if (sub) sub.textContent=`${window.S.exercises.length} exercício${window.S.exercises.length!==1?'s':''}`;
+  const exs = wGetExercises();
+  const el = document.getElementById('w-day-title');
+  const sub = document.getElementById('w-home-sub');
+  if (el) el.textContent = window.S.days.length ? window.S.days[0].name : 'Treino';
+  if (sub) sub.textContent = `${exs.length} exercício${exs.length!==1?'s':''}`;
 }
 function wRenderEx() {
-  const ex=window.S.exercises[wCur];
-  if (!ex){wShowScreen('ws-done');wRenderDone();return;}
-  document.getElementById('w-ex-name').textContent=ex.name;
-  document.getElementById('w-load').textContent=ex.load;
-  document.getElementById('w-unit').textContent=ex.unit;
-  document.getElementById('w-prog').textContent=`${wCur+1} / ${window.S.exercises.length}`;
-  document.getElementById('w-dots').innerHTML=Array.from({length:ex.sets},(_,i)=>
+  const exs = wGetExercises();
+  const ex = exs[wCur];
+  if (!ex) { wShowScreen('ws-done'); wRenderDone(); return; }
+  document.getElementById('w-ex-name').textContent = ex.name;
+  document.getElementById('w-load').textContent = ex.load;
+  document.getElementById('w-unit').textContent = ex.unit;
+  document.getElementById('w-prog').textContent = `${wCur+1} / ${exs.length}`;
+  document.getElementById('w-dots').innerHTML = Array.from({length:ex.sets},(_,i)=>
     `<button class="w-dot${ex.done.includes(i)?' done':''}" onclick="wToggleDot(${i})">${i+1}</button>`
   ).join('');
   wShowScreen('ws-ex');
 }
 function wToggleDot(i) {
-  const ex=window.S.exercises[wCur];
+  const ex = wGetExercises()[wCur];
   if (!ex) return;
-  ex.done=ex.done.includes(i)?ex.done.filter(x=>x!==i):[...ex.done,i];
+  ex.done = ex.done.includes(i) ? ex.done.filter(x=>x!==i) : [...ex.done,i];
   saveState(); wRenderEx();
-  if (ex.done.length===ex.sets) setTimeout(()=>wGoRest(),400);
+  if (ex.done.length===ex.sets) setTimeout(()=>wGoRest(), 400);
 }
-function wStart(){wCur=0;wRenderEx();}
-function wNextEx(){
-  if (wCur<window.S.exercises.length-1){wCur++;wRenderEx();}
-  else{wShowScreen('ws-done');wRenderDone();}
+function wStart() { wCur=0; wRenderEx(); }
+function wNextEx() {
+  const exs = wGetExercises();
+  if (wCur < exs.length-1) { wCur++; wRenderEx(); }
+  else { wShowScreen('ws-done'); wRenderDone(); }
 }
-function wPrevEx(){if(wCur>0){wCur--;wRenderEx();}}
-function wGoRest(){
-  const ex=window.S.exercises[wCur];
-  wRestTotal=ex?ex.rest:60; wRestLeft=wRestTotal;
+function wPrevEx() { if(wCur>0){wCur--;wRenderEx();} }
+function wGoRest() {
+  const ex = wGetExercises()[wCur];
+  wRestTotal = ex ? ex.rest : 60; wRestLeft = wRestTotal;
   wUpdateRing(); wShowScreen('ws-rest');
   if (wRestInt) clearInterval(wRestInt);
-  wRestInt=setInterval(()=>{
+  wRestInt = setInterval(()=>{
     wRestLeft--; wUpdateRing();
-    if (wRestLeft<=0){
-      clearInterval(wRestInt);wRestInt=null;
+    if (wRestLeft <= 0) {
+      clearInterval(wRestInt); wRestInt=null;
       if ('vibrate' in navigator) navigator.vibrate([300,100,300,100,300]);
       wNextEx();
     }
-  },1000);
+  }, 1000);
 }
-function wUpdateRing(){
-  const num=document.getElementById('w-tnum');
-  const ring=document.getElementById('w-ring');
-  if (num) num.textContent=wRestLeft;
-  if (ring) ring.style.strokeDashoffset=CIRC*(1-wRestLeft/wRestTotal);
+function wUpdateRing() {
+  const num = document.getElementById('w-tnum');
+  const ring = document.getElementById('w-ring');
+  if (num) num.textContent = wRestLeft;
+  if (ring) ring.style.strokeDashoffset = CIRC*(1-wRestLeft/wRestTotal);
 }
-function wSkipRest(){if(wRestInt){clearInterval(wRestInt);wRestInt=null;}wNextEx();}
-function wRenderDone(){
-  const sub=document.getElementById('w-done-sub');
-  const total=window.S.exercises.reduce((a,e)=>a+e.done.length,0);
-  if (sub) sub.textContent=`${window.S.exercises.length} exercícios · ${total} séries`;
+function wSkipRest() { if(wRestInt){clearInterval(wRestInt);wRestInt=null;} wNextEx(); }
+function wRenderDone() {
+  const exs = wGetExercises();
+  const total = exs.reduce((a,e)=>a+e.done.length,0);
+  const sub = document.getElementById('w-done-sub');
+  if (sub) sub.textContent = `${exs.length} exercícios · ${total} séries`;
 }
-function wRestart(){
-  window.S.exercises.forEach(e=>{e.done=[];});
+function wRestart() {
+  wGetExercises().forEach(e=>{e.done=[];});
   saveState(); wCur=0; wRenderHome(); wShowScreen('ws-home');
 }
 
 /* ════════ INIT ════════ */
-if (window.isWatch) { wRenderHome(); } else { render(); }
+if (window.isWatch) { wRenderHome(); }
+else { renderWeek(); }
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js'));
