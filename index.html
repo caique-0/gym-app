@@ -6,202 +6,275 @@
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#111110" media="(prefers-color-scheme: dark)" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Treino" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
   <title>Treino</title>
   <style>
+    /* ─── Design tokens ─── */
     :root {
-      --bg: #ffffff;
-      --bg2: #f5f5f3;
-      --bg3: #ebebea;
-      --text: #111110;
-      --text2: #6b6b68;
-      --text3: #a8a8a4;
-      --border: rgba(0,0,0,0.10);
-      --border2: rgba(0,0,0,0.18);
-      --success: #3b6d11;
-      --success-bg: #eaf3de;
-      --danger: #a32d2d;
-      --radius: 12px;
-      --radius-sm: 8px;
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bot: env(safe-area-inset-bottom, 0px);
+      --bg:       #ffffff; --bg2: #f5f5f3; --bg3: #ebebea;
+      --text:     #111110; --text2: #6b6b68; --text3: #a8a8a4;
+      --border:   rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+      --success:  #3b6d11; --success-bg: #eaf3de; --danger: #a32d2d;
+      --r:        12px; --rs: 8px;
+      --safe-top: env(safe-area-inset-top,0px);
+      --safe-bot: env(safe-area-inset-bottom,0px);
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #111110;
-        --bg2: #1c1c1a;
-        --bg3: #272725;
-        --text: #e8e8e4;
-        --text2: #9a9a96;
-        --text3: #5a5a57;
-        --border: rgba(255,255,255,0.10);
-        --border2: rgba(255,255,255,0.18);
-        --success: #97c459;
-        --success-bg: #1a2a0a;
-        --danger: #f09595;
+        --bg:#111110; --bg2:#1c1c1a; --bg3:#272725;
+        --text:#e8e8e4; --text2:#9a9a96; --text3:#5a5a57;
+        --border:rgba(255,255,255,0.10); --border2:rgba(255,255,255,0.18);
+        --success:#97c459; --success-bg:#1a2a0a; --danger:#f09595;
       }
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}
 
-    /* Layout */
-    #app { max-width: 480px; margin: 0 auto; padding: calc(var(--safe-top) + 1rem) 1rem calc(var(--safe-bot) + 5rem); min-height: 100%; }
+    /* ════════════════════════════════
+       PHONE LAYOUT
+    ════════════════════════════════ */
+    #phone { display: block; }
+    #watch  { display: none; }
 
-    /* Header */
-    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem; }
-    .day-input { font-size: 20px; font-weight: 600; color: var(--text); border: none; background: transparent; width: calc(100% - 44px); outline: none; }
-    .icon-btn { width: 36px; height: 36px; border: none; background: var(--bg2); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); flex-shrink: 0; }
-    .icon-btn:active { opacity: 0.7; transform: scale(0.95); }
+    #app{max-width:480px;margin:0 auto;padding:calc(var(--safe-top) + 1rem) 1rem calc(var(--safe-bot) + 5rem)}
+    .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem}
+    .day-input{font-size:20px;font-weight:600;color:var(--text);border:none;background:transparent;width:calc(100% - 44px);outline:none}
+    .icon-btn{width:36px;height:36px;border:none;background:var(--bg2);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);flex-shrink:0}
+    .icon-btn:active{opacity:.7;transform:scale(.95)}
 
-    /* Exercise items */
-    .ex-item { border-bottom: 0.5px solid var(--border); padding: 14px 0; }
-    .ex-item:last-child { border-bottom: none; }
+    .ex-item{border-bottom:.5px solid var(--border);padding:14px 0}
+    .ex-item:last-child{border-bottom:none}
+    .ex-header{display:flex;align-items:center;gap:12px}
+    .check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;background:transparent}
+    .check.done{background:var(--text);border-color:var(--text)}
+    .check svg{display:none} .check.done svg{display:block}
+    .ex-name{flex:1;font-size:15px;font-weight:500;color:var(--text);border:none;background:transparent;outline:none;min-width:0}
+    .ex-summary{font-size:12px;color:var(--text3);display:flex;gap:8px;flex-shrink:0}
+    .chevron{color:var(--text3);transition:transform .2s;flex-shrink:0;cursor:pointer}
+    .chevron.open{transform:rotate(180deg)}
+    .progress-strip{height:2px;background:var(--border);margin:10px 0 0 34px;border-radius:2px}
+    .progress-fill{height:2px;background:var(--text);border-radius:2px;transition:width .3s}
+    .ex-body{margin-left:34px;margin-top:16px;display:none}
+    .ex-body.open{display:block}
+    .field{margin-bottom:18px}
+    .field-label{font-size:11px;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:10px}
+    .load-row{display:flex;align-items:center;gap:10px}
+    .load-num{font-size:28px;font-weight:600;color:var(--text);width:80px;border:none;background:transparent;outline:none}
+    .load-num:focus{border-bottom:1px solid var(--border2)}
+    .unit-toggle{display:flex;border:.5px solid var(--border2);border-radius:var(--rs);overflow:hidden}
+    .unit-btn{padding:5px 10px;font-size:12px;border:none;background:transparent;cursor:pointer;color:var(--text2)}
+    .unit-btn.active{background:var(--text);color:var(--bg);font-weight:500}
+    .load-diff{font-size:12px;margin-left:2px}
+    .load-diff.up{color:var(--success)} .load-diff.down{color:var(--danger)} .load-diff.eq{color:var(--text3)}
+    .hist-row{display:flex;align-items:flex-end;gap:10px;margin-top:14px;overflow-x:auto;padding-bottom:4px}
+    .hist-row::-webkit-scrollbar{display:none}
+    .hist-item{flex-shrink:0;text-align:center}
+    .hist-date{font-size:10px;color:var(--text3);margin-bottom:4px}
+    .hist-bar-wrap{width:28px;height:40px;display:flex;align-items:flex-end;justify-content:center;margin:0 auto 4px}
+    .hist-bar{width:6px;border-radius:3px;background:var(--bg3);transition:height .3s}
+    .hist-item.cur .hist-bar{background:var(--text)}
+    .hist-val{font-size:11px;color:var(--text2);font-weight:500}
+    .hist-item.cur .hist-val{color:var(--text);font-weight:600}
+    .hist-connector{width:10px;flex-shrink:0;height:1px;background:var(--border);align-self:center;margin-bottom:12px}
+    .sets-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .set-dot{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border2);font-size:13px;font-weight:500;cursor:pointer;background:transparent;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .set-dot:active{transform:scale(.92)} .set-dot.done{background:var(--text);border-color:var(--text);color:var(--bg)}
+    .set-add{width:36px;height:36px;border-radius:50%;border:1px dashed var(--border2);font-size:20px;cursor:pointer;background:transparent;color:var(--text3);display:flex;align-items:center;justify-content:center}
+    .spin-row{display:flex;align-items:center;gap:12px}
+    .spin-btn{width:32px;height:32px;border-radius:50%;border:.5px solid var(--border2);background:transparent;cursor:pointer;font-size:18px;color:var(--text2);display:flex;align-items:center;justify-content:center}
+    .spin-btn:active{background:var(--bg2)}
+    .spin-val{font-size:18px;font-weight:600;min-width:36px;text-align:center;color:var(--text)}
+    .chips{display:flex;gap:6px;flex-wrap:wrap}
+    .chip{padding:6px 12px;border-radius:20px;border:.5px solid var(--border);font-size:13px;cursor:pointer;color:var(--text2);background:transparent}
+    .chip.sel{border-color:var(--text);color:var(--text);font-weight:500;background:var(--bg2)}
+    .timer-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+    .play-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text)}
+    .play-btn:active{background:var(--bg2)}
+    .timer-val{font-size:22px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums;opacity:0;transition:opacity .2s;min-width:52px}
+    .timer-val.show{opacity:1}
+    .del-btn{font-size:12px;color:var(--text3);background:none;border:none;cursor:pointer;margin-top:12px;padding:0;display:flex;align-items:center;gap:5px}
+    .del-btn:active{color:var(--danger)}
+    .add-row{padding-top:1rem}
+    .add-ex-btn{font-size:14px;color:var(--text3);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 0}
+    .add-ex-btn:active{color:var(--text)}
+    .empty{text-align:center;padding:5rem 1rem;color:var(--text3);font-size:15px}
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:.5px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 calc(var(--safe-bot) + 10px)}
+    .nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;padding:4px 16px}
+    .nav-btn.active{color:var(--text)}
+    .nav-btn svg{width:22px;height:22px}
+    #history-screen{display:none} #history-screen.active{display:block}
+    #main-screen{display:block} #main-screen.hidden{display:none}
+    .hist-screen-item{padding:14px 0;border-bottom:.5px solid var(--border)}
+    .hist-screen-name{font-size:15px;font-weight:500;color:var(--text);margin-bottom:6px}
+    .hist-screen-row{display:flex;gap:16px}
+    .hist-screen-stat{font-size:13px;color:var(--text2)}
+    .hist-screen-stat span{font-weight:600;color:var(--text)}
+    .section-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:1.25rem}
 
-    .ex-header { display: flex; align-items: center; gap: 12px; }
-    .check { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--border2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; background: transparent; }
-    .check.done { background: var(--text); border-color: var(--text); }
-    .check svg { display: none; }
-    .check.done svg { display: block; }
-    .ex-name { flex: 1; font-size: 15px; font-weight: 500; color: var(--text); border: none; background: transparent; outline: none; min-width: 0; }
-    .ex-summary { font-size: 12px; color: var(--text3); display: flex; gap: 8px; flex-shrink: 0; }
-    .chevron { color: var(--text3); transition: transform 0.2s; flex-shrink: 0; cursor: pointer; }
-    .chevron.open { transform: rotate(180deg); }
+    /* ════════════════════════════════
+       WATCH LAYOUT  (≤ 320px)
+    ════════════════════════════════ */
+    @media (max-width: 320px) {
+      #phone { display: none; }
+      #watch  { display: flex; flex-direction: column; align-items: center; justify-content: center;
+                width: 100vw; height: 100vh; overflow: hidden; background: #000; color: #fff;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+    }
 
-    .progress-strip { height: 2px; background: var(--border); margin: 10px 0 0 34px; border-radius: 2px; }
-    .progress-fill { height: 2px; background: var(--text); border-radius: 2px; transition: width 0.3s; }
+    /* Watch screens */
+    .w-screen { display: none; flex-direction: column; align-items: center; justify-content: center;
+                width: 100%; height: 100%; padding: 14px; text-align: center; }
+    .w-screen.w-active { display: flex; }
 
-    /* Body */
-    .ex-body { margin-left: 34px; margin-top: 16px; display: none; }
-    .ex-body.open { display: block; }
+    /* Home */
+    .w-title { font-size: 11px; color: #888; margin-bottom: 6px;
+               white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
+    .w-big-btn { width: 64px; height: 64px; border-radius: 50%; background: #fff; border: none;
+                 cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .w-big-btn:active { transform: scale(.93); opacity: .85; }
+    .w-big-btn svg { width: 26px; height: 26px; color: #000; }
+    .w-sub { font-size: 11px; color: #666; margin-top: 10px; }
 
-    .field { margin-bottom: 18px; }
-    .field-label { font-size: 11px; color: var(--text3); letter-spacing: .07em; text-transform: uppercase; margin-bottom: 10px; }
+    /* Exercise */
+    .w-ex-name { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 2px;
+                 max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .w-load { font-size: 30px; font-weight: 700; color: #fff; line-height: 1; }
+    .w-load-unit { font-size: 13px; color: #888; }
+    .w-sets-label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: .06em; margin: 10px 0 6px; }
+    .w-dots { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; max-width: 160px; }
+    .w-dot { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid #444; background: transparent;
+             cursor: pointer; font-size: 11px; font-weight: 600; color: #888; display: flex; align-items: center; justify-content: center; }
+    .w-dot:active { transform: scale(.88); }
+    .w-dot.done { background: #fff; border-color: #fff; color: #000; }
+    .w-nav { display: flex; gap: 10px; margin-top: 12px; }
+    .w-nav-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #333; background: transparent;
+                 cursor: pointer; color: #888; display: flex; align-items: center; justify-content: center; }
+    .w-nav-btn:active { background: #222; }
+    .w-nav-btn svg { width: 14px; height: 14px; }
+    .w-progress-text { font-size: 10px; color: #555; margin-top: 6px; }
 
-    /* Load */
-    .load-row { display: flex; align-items: center; gap: 10px; }
-    .load-num { font-size: 28px; font-weight: 600; color: var(--text); width: 80px; border: none; background: transparent; outline: none; }
-    .load-num:focus { border-bottom: 1px solid var(--border2); }
-    .unit-toggle { display: flex; border: 0.5px solid var(--border2); border-radius: var(--radius-sm); overflow: hidden; }
-    .unit-btn { padding: 5px 10px; font-size: 12px; border: none; background: transparent; cursor: pointer; color: var(--text2); }
-    .unit-btn.active { background: var(--text); color: var(--bg); font-weight: 500; }
-    .load-diff { font-size: 12px; margin-left: 2px; }
-    .load-diff.up { color: var(--success); }
-    .load-diff.down { color: var(--danger); }
-    .load-diff.eq { color: var(--text3); }
+    /* Rest / Timer */
+    .w-rest-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+    .w-ring-wrap { position: relative; width: 110px; height: 110px; }
+    .w-ring-wrap svg { transform: rotate(-90deg); }
+    .w-ring-bg { fill: none; stroke: #222; stroke-width: 5; }
+    .w-ring-fg { fill: none; stroke: #fff; stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+    .w-ring-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .w-timer-num { font-size: 28px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; line-height: 1; }
+    .w-timer-s { font-size: 11px; color: #666; }
+    .w-skip { font-size: 11px; color: #555; background: none; border: none; cursor: pointer; margin-top: 10px; padding: 4px 8px; }
+    .w-skip:active { color: #fff; }
 
-    /* History */
-    .hist-row { display: flex; align-items: flex-end; gap: 10px; margin-top: 14px; overflow-x: auto; padding-bottom: 4px; }
-    .hist-row::-webkit-scrollbar { display: none; }
-    .hist-item { flex-shrink: 0; text-align: center; }
-    .hist-date { font-size: 10px; color: var(--text3); margin-bottom: 4px; }
-    .hist-bar-wrap { width: 28px; height: 40px; display: flex; align-items: flex-end; justify-content: center; margin: 0 auto 4px; }
-    .hist-bar { width: 6px; border-radius: 3px; background: var(--bg3); transition: height 0.3s; }
-    .hist-item.cur .hist-bar { background: var(--text); }
-    .hist-val { font-size: 11px; color: var(--text2); font-weight: 500; }
-    .hist-item.cur .hist-val { color: var(--text); font-weight: 600; }
-    .hist-connector { width: 10px; flex-shrink: 0; height: 1px; background: var(--border); align-self: center; margin-bottom: 12px; }
-
-    /* Sets */
-    .sets-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .set-dot { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--border2); font-size: 13px; font-weight: 500; cursor: pointer; background: transparent; color: var(--text2); display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-    .set-dot:active { transform: scale(0.92); }
-    .set-dot.done { background: var(--text); border-color: var(--text); color: var(--bg); }
-    .set-add { width: 36px; height: 36px; border-radius: 50%; border: 1px dashed var(--border2); font-size: 20px; cursor: pointer; background: transparent; color: var(--text3); display: flex; align-items: center; justify-content: center; }
-    .set-add:active { opacity: 0.6; }
-
-    /* Reps */
-    .spin-row { display: flex; align-items: center; gap: 12px; }
-    .spin-btn { width: 32px; height: 32px; border-radius: 50%; border: 0.5px solid var(--border2); background: transparent; cursor: pointer; font-size: 18px; color: var(--text2); display: flex; align-items: center; justify-content: center; }
-    .spin-btn:active { background: var(--bg2); }
-    .spin-val { font-size: 18px; font-weight: 600; min-width: 36px; text-align: center; color: var(--text); }
-
-    /* Rest */
-    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip { padding: 6px 12px; border-radius: 20px; border: 0.5px solid var(--border); font-size: 13px; cursor: pointer; color: var(--text2); background: transparent; }
-    .chip.sel { border-color: var(--text); color: var(--text); font-weight: 500; background: var(--bg2); }
-    .timer-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
-    .play-btn { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--border2); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text); }
-    .play-btn:active { background: var(--bg2); }
-    .timer-val { font-size: 22px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; opacity: 0; transition: opacity 0.2s; min-width: 52px; }
-    .timer-val.show { opacity: 1; }
-
-    /* Delete */
-    .del-btn { font-size: 12px; color: var(--text3); background: none; border: none; cursor: pointer; margin-top: 12px; padding: 0; display: flex; align-items: center; gap: 5px; }
-    .del-btn:active { color: var(--danger); }
-
-    /* Add button */
-    .add-row { padding-top: 1rem; }
-    .add-ex-btn { font-size: 14px; color: var(--text3); background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 0; }
-    .add-ex-btn:active { color: var(--text); }
-
-    /* Empty */
-    .empty { text-align: center; padding: 5rem 1rem; color: var(--text3); font-size: 15px; }
-
-    /* Bottom nav */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); border-top: 0.5px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 calc(var(--safe-bot) + 10px); }
-    .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: var(--text3); background: none; border: none; cursor: pointer; padding: 4px 16px; }
-    .nav-btn.active { color: var(--text); }
-    .nav-btn svg { width: 22px; height: 22px; }
-
-    /* History screen */
-    #history-screen { display: none; }
-    #history-screen.active { display: block; }
-    #main-screen { display: block; }
-    #main-screen.hidden { display: none; }
-
-    .hist-screen-item { padding: 14px 0; border-bottom: 0.5px solid var(--border); }
-    .hist-screen-name { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
-    .hist-screen-row { display: flex; gap: 16px; }
-    .hist-screen-stat { font-size: 13px; color: var(--text2); }
-    .hist-screen-stat span { font-weight: 600; color: var(--text); }
-
-    .section-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 1.25rem; }
+    /* Done */
+    .w-done-icon { font-size: 44px; margin-bottom: 6px; }
+    .w-done-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+    .w-done-sub { font-size: 11px; color: #666; }
+    .w-done-restart { margin-top: 14px; font-size: 12px; color: #555; background: none; border: 1px solid #333;
+                      border-radius: 20px; padding: 6px 14px; cursor: pointer; }
+    .w-done-restart:active { color: #fff; border-color: #888; }
   </style>
 </head>
 <body>
-<div id="app">
 
-  <!-- Main screen -->
-  <div id="main-screen">
-    <div class="header">
-      <input class="day-input" id="dayTitle" value="Peito e Tríceps" />
-      <button class="icon-btn" onclick="addExercise()" aria-label="Adicionar exercício">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </button>
+<!-- ══════════════ PHONE ══════════════ -->
+<div id="phone">
+  <div id="app">
+    <div id="main-screen">
+      <div class="header">
+        <input class="day-input" id="dayTitle" value="Peito e Tríceps" />
+        <button class="icon-btn" onclick="addExercise()" aria-label="Adicionar exercício">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+      <div id="list"></div>
+      <div class="add-row">
+        <button class="add-ex-btn" onclick="addExercise()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          adicionar exercício
+        </button>
+      </div>
     </div>
-    <div id="list"></div>
-    <div class="add-row">
-      <button class="add-ex-btn" onclick="addExercise()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        adicionar exercício
+    <div id="history-screen">
+      <p class="section-title">Histórico de cargas</p>
+      <div id="hist-list"></div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="nav-main" onclick="showScreen('main')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      Treino
+    </button>
+    <button class="nav-btn" id="nav-hist" onclick="showScreen('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Histórico
+    </button>
+  </nav>
+</div>
+
+<!-- ══════════════ WATCH ══════════════ -->
+<div id="watch">
+
+  <!-- Home -->
+  <div class="w-screen w-active" id="ws-home">
+    <div class="w-title" id="w-day-title">Peito e Tríceps</div>
+    <button class="w-big-btn" onclick="wStart()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+    </button>
+    <div class="w-sub" id="w-home-sub">— exercícios</div>
+  </div>
+
+  <!-- Exercise -->
+  <div class="w-screen" id="ws-ex">
+    <div class="w-ex-name" id="w-ex-name">—</div>
+    <div style="margin-bottom:2px"><span class="w-load" id="w-load">—</span><span class="w-load-unit" id="w-unit">kg</span></div>
+    <div class="w-sets-label">séries</div>
+    <div class="w-dots" id="w-dots"></div>
+    <div class="w-progress-text" id="w-prog"></div>
+    <div class="w-nav">
+      <button class="w-nav-btn" onclick="wPrevEx()" aria-label="Anterior">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,18 9,12 15,6"/></svg>
+      </button>
+      <button class="w-nav-btn" onclick="wGoRest()" aria-label="Descanso">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      </button>
+      <button class="w-nav-btn" onclick="wNextEx()" aria-label="Próximo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,18 15,12 9,6"/></svg>
       </button>
     </div>
   </div>
 
-  <!-- History screen -->
-  <div id="history-screen">
-    <p class="section-title">Histórico de cargas</p>
-    <div id="hist-list"></div>
+  <!-- Rest timer -->
+  <div class="w-screen" id="ws-rest">
+    <div class="w-rest-label">descanso</div>
+    <div class="w-ring-wrap">
+      <svg width="110" height="110" viewBox="0 0 110 110">
+        <circle class="w-ring-bg" cx="55" cy="55" r="48"/>
+        <circle class="w-ring-fg" id="w-ring" cx="55" cy="55" r="48"
+          stroke-dasharray="301.6" stroke-dashoffset="0"/>
+      </svg>
+      <div class="w-ring-inner">
+        <span class="w-timer-num" id="w-tnum">60</span>
+        <span class="w-timer-s">seg</span>
+      </div>
+    </div>
+    <button class="w-skip" onclick="wSkipRest()">pular ›</button>
+  </div>
+
+  <!-- Done -->
+  <div class="w-screen" id="ws-done">
+    <div class="w-done-icon">✓</div>
+    <div class="w-done-title">Treino concluído</div>
+    <div class="w-done-sub" id="w-done-sub">— exercícios</div>
+    <button class="w-done-restart" onclick="wRestart()">Recomeçar</button>
   </div>
 
 </div>
 
-<!-- Bottom nav -->
-<nav class="bottom-nav">
-  <button class="nav-btn active" id="nav-main" onclick="showScreen('main')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
-    Treino
-  </button>
-  <button class="nav-btn" id="nav-hist" onclick="showScreen('history')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-    Histórico
-  </button>
-</nav>
-
 <script>
+/* ══════════════════════════════════════
+   SHARED STATE
+══════════════════════════════════════ */
 function fakeHist(base, unit) {
   const out = [];
   for (let i = 4; i >= 1; i--) {
@@ -214,14 +287,12 @@ function fakeHist(base, unit) {
 let S = loadState() || {
   title: 'Peito e Tríceps',
   exercises: [
-    { id:1, name:'Supino reto',        sets:4, reps:12, done:[], rest:60, open:true,  load:80, unit:'kg', hist:fakeHist(80,'kg') },
-    { id:2, name:'Crucifixo inclinado',sets:3, reps:15, done:[], rest:45, open:false, load:20, unit:'kg', hist:fakeHist(20,'kg') },
-    { id:3, name:'Tríceps pulley',     sets:3, reps:12, done:[], rest:60, open:false, load:35, unit:'kg', hist:fakeHist(35,'kg') },
+    { id:1, name:'Supino reto',         sets:4, reps:12, done:[], rest:60, open:true,  load:80, unit:'kg', hist:fakeHist(80,'kg') },
+    { id:2, name:'Crucifixo inclinado', sets:3, reps:15, done:[], rest:45, open:false, load:20, unit:'kg', hist:fakeHist(20,'kg') },
+    { id:3, name:'Tríceps pulley',      sets:3, reps:12, done:[], rest:60, open:false, load:35, unit:'kg', hist:fakeHist(35,'kg') },
   ],
   nextId: 4
 };
-
-const timers = {};
 
 function loadState() {
   try { return JSON.parse(localStorage.getItem('gym_state')); } catch { return null; }
@@ -232,57 +303,56 @@ function saveState() {
   try { localStorage.setItem('gym_state', JSON.stringify(s)); } catch {}
 }
 
+const timers = {};
 function ft(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
 function prevLoad(ex) { return ex.hist.length ? ex.hist[ex.hist.length-1].load : null; }
-function maxHist(ex) { const all = [...ex.hist.map(h=>h.load), ex.load]; return Math.max(...all) || 1; }
+function maxHist(ex) { const all = [...ex.hist.map(h=>h.load), ex.load]; return Math.max(...all)||1; }
 
+/* ══════════════════════════════════════
+   DETECT DEVICE
+══════════════════════════════════════ */
+const isWatch = window.innerWidth <= 320;
+
+/* ══════════════════════════════════════
+   PHONE LOGIC
+══════════════════════════════════════ */
 function render() {
+  if (isWatch) return;
   document.getElementById('dayTitle').value = S.title;
   const list = document.getElementById('list');
   if (!S.exercises.length) {
     list.innerHTML = '<div class="empty">Nenhum exercício.<br>Toque + para adicionar.</div>';
     return;
   }
-
   list.innerHTML = S.exercises.map(ex => {
     const pct = ex.sets ? Math.round(ex.done.length / ex.sets * 100) : 0;
     const allDone = ex.done.length === ex.sets && ex.sets > 0;
     const prev = prevLoad(ex);
     const diff = prev !== null ? +(ex.load - prev).toFixed(1) : null;
-
     let diffHtml = '';
     if (diff !== null) {
       if (diff > 0) diffHtml = `<span class="load-diff up">▲ +${diff}${ex.unit}</span>`;
       else if (diff < 0) diffHtml = `<span class="load-diff down">▼ ${diff}${ex.unit}</span>`;
       else diffHtml = `<span class="load-diff eq">= anterior</span>`;
     }
-
     const maxL = maxHist(ex);
-    const histItems = [...ex.hist.map((h, i) => {
-      const barH = Math.max(4, Math.round((h.load / maxL) * 36));
-      const connector = i < ex.hist.length - 1 || true ? '<div class="hist-connector"></div>' : '';
-      return `<div class="hist-item">
-        <div class="hist-date">${h.date}</div>
+    const histItems = [...ex.hist.map((h,i) => {
+      const barH = Math.max(4, Math.round((h.load/maxL)*36));
+      const sep = i < ex.hist.length ? '<div class="hist-connector"></div>' : '';
+      return `<div class="hist-item"><div class="hist-date">${h.date}</div>
         <div class="hist-bar-wrap"><div class="hist-bar" style="height:${barH}px"></div></div>
-        <div class="hist-val">${h.load}</div>
-      </div>${connector}`;
-    }), `<div class="hist-item cur">
-      <div class="hist-date">hoje</div>
+        <div class="hist-val">${h.load}</div></div>${sep}`;
+    }), `<div class="hist-item cur"><div class="hist-date">hoje</div>
       <div class="hist-bar-wrap"><div class="hist-bar" style="height:${Math.max(4,Math.round((ex.load/maxL)*36))}px"></div></div>
-      <div class="hist-val">${ex.load}</div>
-    </div>`].join('');
-
-    const setsHtml = Array.from({length: ex.sets}, (_,i) =>
+      <div class="hist-val">${ex.load}</div></div>`].join('');
+    const setsHtml = Array.from({length:ex.sets},(_,i)=>
       `<button class="set-dot${ex.done.includes(i)?' done':''}" onclick="toggleSet(${ex.id},${i})">${i+1}</button>`
     ).join('') + `<button class="set-add" onclick="addSet(${ex.id})">+</button>`;
-
-    const chips = [30,45,60,90,120].map(r =>
+    const chips = [30,45,60,90,120].map(r=>
       `<span class="chip${ex.rest===r?' sel':''}" onclick="setRest(${ex.id},${r})">${r}s</span>`
     ).join('');
-
     const t = timers[ex.id];
     const running = t && t.left !== null;
-
     return `
     <div class="ex-item" id="ex-${ex.id}">
       <div class="ex-header">
@@ -295,7 +365,6 @@ function render() {
       </div>
       <div class="progress-strip"><div class="progress-fill" style="width:${pct}%"></div></div>
       <div class="ex-body${ex.open?' open':''}">
-
         <div class="field">
           <div class="field-label">Carga</div>
           <div class="load-row">
@@ -308,12 +377,10 @@ function render() {
           </div>
           <div class="hist-row">${histItems}</div>
         </div>
-
         <div class="field">
           <div class="field-label">Séries</div>
           <div class="sets-row">${setsHtml}</div>
         </div>
-
         <div class="field">
           <div class="field-label">Repetições</div>
           <div class="spin-row">
@@ -322,7 +389,6 @@ function render() {
             <button class="spin-btn" onclick="chReps(${ex.id},1)">+</button>
           </div>
         </div>
-
         <div class="field">
           <div class="field-label">Descanso</div>
           <div class="chips">${chips}</div>
@@ -335,7 +401,6 @@ function render() {
             <span class="timer-val${running?' show':''}" id="tv-${ex.id}">${running ? ft(t.left) : ft(ex.rest)}</span>
           </div>
         </div>
-
         <button class="del-btn" onclick="delEx(${ex.id})">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
           remover
@@ -371,29 +436,28 @@ function showScreen(name) {
   if (name === 'history') renderHistory();
 }
 
-// Interactions
-function toggleOpen(id) { const ex = S.exercises.find(e=>e.id===id); ex.open = !ex.open; render(); }
-function rename(id, v) { S.exercises.find(e=>e.id===id).name = v; saveState(); }
+// Phone interactions
+function toggleOpen(id) { const ex = S.exercises.find(e=>e.id===id); ex.open=!ex.open; render(); }
+function rename(id,v) { S.exercises.find(e=>e.id===id).name=v; saveState(); }
 function markAll(id) {
   const ex = S.exercises.find(e=>e.id===id);
-  const all = ex.done.length === ex.sets && ex.sets > 0;
+  const all = ex.done.length===ex.sets && ex.sets>0;
   ex.done = all ? [] : Array.from({length:ex.sets},(_,i)=>i);
   render(); saveState();
 }
-function toggleSet(id, i) {
+function toggleSet(id,i) {
   const ex = S.exercises.find(e=>e.id===id);
-  ex.done = ex.done.includes(i) ? ex.done.filter(x=>x!==i) : [...ex.done, i];
-  if (ex.done.length === ex.sets && !(timers[id] && timers[id].left !== null)) startTimer(ex);
+  ex.done = ex.done.includes(i) ? ex.done.filter(x=>x!==i) : [...ex.done,i];
+  if (ex.done.length===ex.sets && !(timers[id]&&timers[id].left!==null)) startTimer(ex);
   render(); saveState();
 }
 function addSet(id) { S.exercises.find(e=>e.id===id).sets++; render(); saveState(); }
-function chReps(id, d) { const ex = S.exercises.find(e=>e.id===id); ex.reps = Math.max(1, ex.reps + d); render(); saveState(); }
-function setRest(id, r) { S.exercises.find(e=>e.id===id).rest = r; render(); saveState(); }
-function setLoad(id, v) { const ex = S.exercises.find(e=>e.id===id); ex.load = parseFloat(v)||0; saveState(); }
-function setUnit(id, u) { S.exercises.find(e=>e.id===id).unit = u; render(); saveState(); }
-
+function chReps(id,d) { const ex=S.exercises.find(e=>e.id===id); ex.reps=Math.max(1,ex.reps+d); render(); saveState(); }
+function setRest(id,r) { S.exercises.find(e=>e.id===id).rest=r; render(); saveState(); }
+function setLoad(id,v) { S.exercises.find(e=>e.id===id).load=parseFloat(v)||0; saveState(); }
+function setUnit(id,u) { S.exercises.find(e=>e.id===id).unit=u; render(); saveState(); }
 function startTimer(ex) {
-  if (!timers[ex.id]) timers[ex.id] = {};
+  if (!timers[ex.id]) timers[ex.id]={};
   timers[ex.id].left = ex.rest;
   if (timers[ex.id].interval) clearInterval(timers[ex.id].interval);
   render();
@@ -404,7 +468,7 @@ function startTimer(ex) {
     if (timers[ex.id].left <= 0) {
       clearInterval(timers[ex.id].interval);
       timers[ex.id] = {};
-      if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+      if ('vibrate' in navigator) navigator.vibrate([200,100,200]);
       render();
     }
   }, 1000);
@@ -412,7 +476,7 @@ function startTimer(ex) {
 function toggleTimer(id) {
   const ex = S.exercises.find(e=>e.id===id);
   const t = timers[id];
-  if (t && t.left !== null) { clearInterval(t.interval); timers[id] = {}; render(); }
+  if (t && t.left!==null) { clearInterval(t.interval); timers[id]={}; render(); }
   else startTimer(ex);
 }
 function delEx(id) {
@@ -421,19 +485,124 @@ function delEx(id) {
   render(); saveState();
 }
 function addExercise() {
-  S.exercises.push({ id:S.nextId++, name:'Novo exercício', sets:3, reps:12, done:[], rest:60, open:true, load:0, unit:'kg', hist:[] });
+  S.exercises.push({id:S.nextId++,name:'Novo exercício',sets:3,reps:12,done:[],rest:60,open:true,load:0,unit:'kg',hist:[]});
   render(); saveState();
-  setTimeout(() => { const ins = document.querySelectorAll('.ex-name'); const l = ins[ins.length-1]; if(l){l.focus();l.select();} }, 60);
+  setTimeout(()=>{ const ins=document.querySelectorAll('.ex-name'); const l=ins[ins.length-1]; if(l){l.focus();l.select();} }, 60);
+}
+document.getElementById('dayTitle') && document.getElementById('dayTitle').addEventListener('change', e => { S.title=e.target.value; saveState(); });
+
+/* ══════════════════════════════════════
+   WATCH LOGIC
+══════════════════════════════════════ */
+let wCur = 0;
+let wRestInt = null, wRestLeft = 60, wRestTotal = 60;
+const CIRC = 301.6;
+
+function wShowScreen(id) {
+  document.querySelectorAll('.w-screen').forEach(s => s.classList.remove('w-active'));
+  document.getElementById(id).classList.add('w-active');
 }
 
-document.getElementById('dayTitle').addEventListener('change', e => { S.title = e.target.value; saveState(); });
+function wRenderHome() {
+  const el = document.getElementById('w-day-title');
+  const sub = document.getElementById('w-home-sub');
+  if (el) el.textContent = S.title;
+  if (sub) sub.textContent = `${S.exercises.length} exercício${S.exercises.length!==1?'s':''}`;
+}
 
-// Service Worker
+function wRenderEx() {
+  const ex = S.exercises[wCur];
+  if (!ex) { wShowScreen('ws-done'); wRenderDone(); return; }
+  document.getElementById('w-ex-name').textContent = ex.name;
+  document.getElementById('w-load').textContent = ex.load;
+  document.getElementById('w-unit').textContent = ex.unit;
+  document.getElementById('w-prog').textContent = `${wCur+1} / ${S.exercises.length}`;
+  const dots = document.getElementById('w-dots');
+  dots.innerHTML = Array.from({length:ex.sets},(_,i) =>
+    `<button class="w-dot${ex.done.includes(i)?' done':''}" onclick="wToggleDot(${i})">${i+1}</button>`
+  ).join('');
+  wShowScreen('ws-ex');
+}
+
+function wToggleDot(i) {
+  const ex = S.exercises[wCur];
+  if (!ex) return;
+  ex.done = ex.done.includes(i) ? ex.done.filter(x=>x!==i) : [...ex.done,i];
+  saveState();
+  wRenderEx();
+  if (ex.done.length === ex.sets) setTimeout(() => wGoRest(), 400);
+}
+
+function wStart() { wCur = 0; wRenderEx(); }
+
+function wNextEx() {
+  if (wCur < S.exercises.length - 1) { wCur++; wRenderEx(); }
+  else { wShowScreen('ws-done'); wRenderDone(); }
+}
+
+function wPrevEx() {
+  if (wCur > 0) { wCur--; wRenderEx(); }
+}
+
+function wGoRest() {
+  const ex = S.exercises[wCur];
+  wRestTotal = ex ? ex.rest : 60;
+  wRestLeft  = wRestTotal;
+  wUpdateRing();
+  wShowScreen('ws-rest');
+  if (wRestInt) clearInterval(wRestInt);
+  wRestInt = setInterval(() => {
+    wRestLeft--;
+    wUpdateRing();
+    if (wRestLeft <= 0) {
+      clearInterval(wRestInt); wRestInt = null;
+      if ('vibrate' in navigator) navigator.vibrate([300,100,300,100,300]);
+      wNextEx();
+    }
+  }, 1000);
+}
+
+function wUpdateRing() {
+  const num = document.getElementById('w-tnum');
+  const ring = document.getElementById('w-ring');
+  if (num) num.textContent = wRestLeft;
+  if (ring) {
+    const offset = CIRC * (1 - wRestLeft / wRestTotal);
+    ring.style.strokeDashoffset = offset;
+  }
+}
+
+function wSkipRest() {
+  if (wRestInt) { clearInterval(wRestInt); wRestInt = null; }
+  wNextEx();
+}
+
+function wRenderDone() {
+  const sub = document.getElementById('w-done-sub');
+  const total = S.exercises.reduce((a,e) => a + e.done.length, 0);
+  if (sub) sub.textContent = `${S.exercises.length} exercícios · ${total} séries`;
+}
+
+function wRestart() {
+  S.exercises.forEach(e => { e.done = []; });
+  saveState();
+  wCur = 0;
+  wRenderHome();
+  wShowScreen('ws-home');
+}
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+if (isWatch) {
+  wRenderHome();
+} else {
+  render();
+}
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js'));
 }
-
-render();
 </script>
 </body>
 </html>
