@@ -276,7 +276,7 @@
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged }
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut as fbSignOut, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc }
   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
@@ -299,7 +299,7 @@ function showSync(msg) {
   const bar = document.getElementById('sync-bar');
   bar.textContent = msg;
   bar.classList.add('show');
-  setTimeout(() => bar.classList.remove('show'), 2000);
+  setTimeout(() => bar.classList.remove('show'), 2500);
 }
 
 async function loadFromFirestore(uid) {
@@ -314,28 +314,22 @@ async function saveToFirestore(uid, state) {
 }
 
 /* ── expose to global scope ── */
-window._fbAuth = auth;
-window._fbDb   = db;
-window._loadFromFirestore  = loadFromFirestore;
-window._saveToFirestore    = saveToFirestore;
-window._showSync           = showSync;
-window._GoogleAuthProvider = GoogleAuthProvider;
-window._signInWithPopup    = signInWithPopup;
-window._fbSignOut          = fbSignOut;
-window._onAuthStateChanged = onAuthStateChanged;
+window._saveToFirestore = saveToFirestore;
+window._showSync        = showSync;
+
+/* ── handle redirect result (volta do login Google) ── */
+getRedirectResult(auth).catch(() => {});
 
 /* ── auth state ── */
 onAuthStateChanged(auth, async user => {
   if (user) {
     document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('user-avatar').src  = user.photoURL || '';
+    document.getElementById('user-avatar').src = user.photoURL || '';
     document.getElementById('user-name').textContent = user.displayName?.split(' ')[0] || '';
 
     showSync('carregando...');
     const remote = await loadFromFirestore(user.uid);
-    if (remote) {
-      window.S = remote;
-    }
+    if (remote) window.S = remote;
     window._currentUid = user.uid;
     if (window.isWatch) { wRenderHome(); } else { render(); }
     showSync('sincronizado ✓');
@@ -345,9 +339,9 @@ onAuthStateChanged(auth, async user => {
   }
 });
 
-window.signIn = async function() {
+window.signIn = function() {
   const provider = new GoogleAuthProvider();
-  try { await signInWithPopup(auth, provider); } catch(e) { console.error(e); }
+  signInWithRedirect(auth, provider);
 };
 
 window.signOut = async function() {
