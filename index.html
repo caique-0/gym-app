@@ -128,10 +128,14 @@
     .hist-screen-stat span{font-weight:600;color:var(--text)}
     .section-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:1.25rem}
 
-    /* ── WATCH LAYOUT (≤320px) ── */
-    @media (max-width:320px){
+    /* ── WATCH LAYOUT (≤320px ou tela quadrada ≤500px) ── */
+    @media (max-width:320px),(max-device-width:500px) and (min-aspect-ratio:9/10) and (max-aspect-ratio:10/9){
       #phone{display:none}
       #watch{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100vw;height:100vh;overflow:hidden;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+      #login-screen{display:none!important}
+    }
+    @media (max-width:320px){
+      #login-screen{display:none!important}
     }
     .w-screen{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:14px;text-align:center}
     .w-screen.w-active{display:flex}
@@ -411,7 +415,11 @@ function prevLoad(ex) { return ex.hist.length ? ex.hist[ex.hist.length-1].load :
 function maxHist(ex) { const all = [...ex.hist.map(h=>h.load), ex.load]; return Math.max(...all)||1; }
 
 /* ════════ PHONE LOGIC ════════ */
-window.isWatch = window.innerWidth <= 320;
+// Detecta smartwatch: param ?watch na URL, tela quadrada pequena, ou largura ≤320px
+window.isWatch = new URLSearchParams(location.search).has('watch')
+  || window.innerWidth <= 320
+  || (window.screen.width === window.screen.height && window.screen.width <= 500)
+  || (Math.abs(window.screen.width - window.screen.height) <= 10 && window.screen.width <= 500);
 
 function render() {
   if (window.isWatch) return;

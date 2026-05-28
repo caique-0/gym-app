@@ -39,9 +39,11 @@ PWA de academia com progressão de carga, histórico na nuvem e suporte a smartw
 ## Instalação no Galaxy Watch
 
 1. Abra o app **Internet** no relógio
-2. Acesse **https://caique-0.github.io/gym-app**
-3. O app detecta a tela pequena e entra no modo relógio automaticamente
+2. Acesse **https://caique-0.github.io/gym-app/?watch**
+3. O app entra no modo relógio automaticamente (sem tela de login)
 4. Toque em ★ para fixar nos favoritos
+
+> O parâmetro `?watch` garante compatibilidade com todos os modelos de Galaxy Watch.
 
 ---
 
