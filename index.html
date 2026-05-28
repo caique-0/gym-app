@@ -33,6 +33,7 @@
     /* ── Login screen ── */
     #login-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;z-index:100;padding:2rem}
     #login-screen.hidden{display:none}
+    @media (max-width:320px){#login-screen{display:none!important}}
     .login-logo{font-size:48px}
     .login-title{font-size:22px;font-weight:700;color:var(--text)}
     .login-sub{font-size:14px;color:var(--text3);text-align:center;max-width:260px;line-height:1.5}
@@ -334,7 +335,9 @@ onAuthStateChanged(auth, async user => {
     if (window.isWatch) { wRenderHome(); } else { render(); }
     showSync('sincronizado ✓');
   } else {
-    document.getElementById('login-screen').classList.remove('hidden');
+    if (!window.isWatch) {
+      document.getElementById('login-screen').classList.remove('hidden');
+    }
     window._currentUid = null;
   }
 });
