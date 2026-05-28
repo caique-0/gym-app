@@ -277,7 +277,7 @@
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut as fbSignOut, onAuthStateChanged }
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut as fbSignOut, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc }
   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
@@ -318,38 +318,60 @@ async function saveToFirestore(uid, state) {
 window._saveToFirestore = saveToFirestore;
 window._showSync        = showSync;
 
-/* ── handle redirect result (volta do login Google) ── */
-getRedirectResult(auth).catch(() => {});
-
 /* ── auth state ── */
+let _authReady = false;
+
+// Processa resultado de redirect pendente (caso o popup tenha falhado antes)
+getRedirectResult(auth).then(result => {
+  // onAuthStateChanged vai disparar com o usuário
+}).catch(() => {
+  // sem redirect pendente, normal
+});
+
 onAuthStateChanged(auth, async user => {
   if (user) {
     document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('user-avatar').src = user.photoURL || '';
+    document.getElementById('user-avatar').src  = user.photoURL || '';
     document.getElementById('user-name').textContent = user.displayName?.split(' ')[0] || '';
 
     showSync('carregando...');
-    const remote = await loadFromFirestore(user.uid);
-    if (remote) window.S = remote;
+    try {
+      const remote = await loadFromFirestore(user.uid);
+      if (remote) window.S = remote;
+    } catch(e) { /* usa dados locais se Firestore falhar */ }
     window._currentUid = user.uid;
     if (window.isWatch) { wRenderHome(); } else { render(); }
     showSync('sincronizado ✓');
   } else {
-    if (!window.isWatch) {
+    // Só mostra login depois da primeira checagem (evita flash desnecessário)
+    if (_authReady && !window.isWatch) {
       document.getElementById('login-screen').classList.remove('hidden');
     }
     window._currentUid = null;
   }
+  _authReady = true;
 });
 
-window.signIn = function() {
+window.signIn = async function() {
   const provider = new GoogleAuthProvider();
-  signInWithRedirect(auth, provider);
+  try {
+    // Popup: melhor para GitHub Pages (evita problema de cookies cross-domain)
+    await signInWithPopup(auth, provider);
+  } catch(e) {
+    // Se popup for bloqueado, cai para redirect
+    if (e.code === 'auth/popup-blocked') {
+      signInWithRedirect(auth, provider);
+    }
+  }
 };
 
 window.signOut = async function() {
   if (!confirm('Sair da conta?')) return;
   await fbSignOut(auth);
+  window.S = {
+    title: 'Peito e Tríceps',
+    exercises: [], nextId: 1
+  };
 };
 </script>
 
